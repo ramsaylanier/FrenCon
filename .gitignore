@@ -1,6 +1,8 @@
 # build output
 dist/
+build/
 .astro/
+.react-router/
 
 # dependencies
 node_modules/
