@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { RoundtableIdeas } from '../components/RoundtableIdeas';
+---
+
+<Layout title="Roundtable Ideas - FrenCon 2026" description="Roundtable discussion topics for FrenCon">
+  <h1>Roundtable Ideas</h1>
+  <p>Suggest topics for roundtable discussions. Sign in to add your ideas.</p>
+  <RoundtableIdeas client:load />
+</Layout>

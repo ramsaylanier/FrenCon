@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { GameNominations } from '../components/GameNominations';
+---
+
+<Layout title="Game Nominations - FrenCon 2026" description="Nominate board games to play at FrenCon">
+  <h1>Game Nominations</h1>
+  <p>Nominate games you'd like to play at FrenCon. Sign in to add your nominations.</p>
+  <GameNominations client:load />
+</Layout>

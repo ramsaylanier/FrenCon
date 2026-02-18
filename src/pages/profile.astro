@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { ProfileForm } from '../components/ProfileForm';
+---
+
+<Layout title="Profile - FrenCon 2026" description="Update your FrenCon profile and preferences">
+  <h1>Your Profile</h1>
+  <p>Update your display name, dietary restrictions, and travel preferences.</p>
+  <ProfileForm client:load />
+</Layout>

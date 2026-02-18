@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { TTRPGNominations } from '../components/TTRPGNominations';
+---
+
+<Layout title="TTRPG Polling - FrenCon 2026" description="Nominate TTRPGs to play at FrenCon">
+  <h1>TTRPG Nominations</h1>
+  <p>Nominate tabletop RPGs you'd like to play. Sign in to add your nominations.</p>
+  <TTRPGNominations client:load />
+</Layout>

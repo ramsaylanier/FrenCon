@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SignUpForm } from '../components/SignUpForm';
+---
+
+<Layout title="Sign Up - FrenCon 2026">
+  <h1>Sign Up</h1>
+  <SignUpForm client:load />
+  <p>
+    Already have an account? <a href="/signin">Sign in</a>
+  </p>
+</Layout>

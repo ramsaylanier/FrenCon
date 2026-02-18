@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { PollingResults } from '../components/PollingResults';
+---
+
+<Layout title="Polling Results - FrenCon 2026" description="Poll results for games and TTRPGs">
+  <h1>Polling Results</h1>
+  <p>See how the nominations are ranking. Sign in to view.</p>
+  <PollingResults client:load />
+</Layout>

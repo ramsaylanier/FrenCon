@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { VideosList } from '../components/VideosList';
+---
+
+<Layout title="Videos - FrenCon 2026" description="FrenCon videos and recordings">
+  <h1>Videos</h1>
+  <p>Watch FrenCon videos and recordings. Sign in to add videos or view the collection.</p>
+  <VideosList client:load />
+</Layout>

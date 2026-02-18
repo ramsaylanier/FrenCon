@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { MerchIdeas } from '../components/MerchIdeas';
+---
+
+<Layout title="Merchandise Ideas - FrenCon 2026" description="Suggest merchandise for FrenCon">
+  <h1>Merchandise Ideas</h1>
+  <p>Suggest merchandise ideas for FrenCon. Sign in to add your suggestions.</p>
+  <MerchIdeas client:load />
+</Layout>

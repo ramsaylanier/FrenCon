@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+---
+
+<Layout title="Blog - FrenCon 2026" description="FrenCon blog posts">
+  <h1>Blog</h1>
+  <ul>
+    {
+      (await getCollection('blog'))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+        .map((entry) => (
+          <li>
+            <a href={`/blog/${entry.slug}`}>{entry.data.title}</a>
+            <small>
+              {entry.data.pubDate.toLocaleDateString()}
+              {entry.data.author && ` — ${entry.data.author}`}
+            </small>
+          </li>
+        ))
+    }
+  </ul>
+</Layout>
