@@ -8,8 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface Nomination {
   id: string;
@@ -20,8 +19,11 @@ interface Nomination {
   createdAt: unknown;
 }
 
-function TTRPGNominationsInner() {
-  const { user } = useAuth();
+interface TTRPGNominationsProps {
+  user: AuthUser | null;
+}
+
+export default function TTRPGNominations({ user }: TTRPGNominationsProps) {
   const [nominations, setNominations] = useState<Nomination[]>([]);
   const [gameName, setGameName] = useState('');
   const [description, setDescription] = useState('');
@@ -115,13 +117,5 @@ function TTRPGNominationsInner() {
         ))}
       </ul>
     </div>
-  );
-}
-
-export function TTRPGNominations() {
-  return (
-    <ProtectedContent>
-      <TTRPGNominationsInner />
-    </ProtectedContent>
   );
 }

@@ -1,23 +1,18 @@
-import { signOut } from 'firebase/auth';
-import { getFirebaseAuth } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
+import type { AuthUser } from '../lib/auth';
 
-export function UserMenu() {
-  const { user, loading } = useAuth();
+interface UserMenuProps {
+  user: AuthUser | null;
+}
 
-  const handleSignOut = () => {
-    const auth = getFirebaseAuth();
-    signOut(auth);
-  };
-
-  if (loading || !user) return null;
+export default function UserMenu({ user }: UserMenuProps) {
+  if (!user) return null;
 
   return (
     <span>
       {user.email ?? user.displayName ?? 'User'}
-      <button type="button" onClick={handleSignOut}>
-        Sign Out
-      </button>
+      <form action="/api/auth/signout" method="get" style={{ display: 'inline' }}>
+        <button type="submit">Sign Out</button>
+      </form>
     </span>
   );
 }

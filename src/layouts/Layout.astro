@@ -1,18 +1,25 @@
 ---
-import { AuthProvider } from '../components/AuthProvider';
-import '../styles/global.css';
+import Nav from "../components/Nav";
+import { ClientRouter } from "astro:transitions";
+import "../styles/global.css";
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const { title = 'FrenCon 2026', description = 'Board game convention for friends' } = Astro.props;
+const {
+  title = "FrenCon 2026",
+  description = "Board game convention for friends",
+} = Astro.props;
+
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
+    <ClientRouter />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
@@ -21,8 +28,14 @@ const { title = 'FrenCon 2026', description = 'Board game convention for friends
     <title>{title}</title>
   </head>
   <body>
-    <AuthProvider client:load>
+    <header>
+      <Nav user={user} client:load />
+    </header>
+    <main>
       <slot />
-    </AuthProvider>
+    </main>
+    <footer>
+      <p>FrenCon 2026 — Board game convention</p>
+    </footer>
   </body>
 </html>

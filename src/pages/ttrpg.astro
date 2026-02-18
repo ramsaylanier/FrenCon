@@ -1,10 +1,23 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { TTRPGNominations } from '../components/TTRPGNominations';
+import Layout from "../layouts/Layout.astro";
+import TTRPGNominations from "../components/TTRPGNominations";
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect(
+    `/signin?redirect=${encodeURIComponent(Astro.url.pathname)}`,
+  );
+}
 ---
 
-<Layout title="TTRPG Polling - FrenCon 2026" description="Nominate TTRPGs to play at FrenCon">
+<Layout
+  title="TTRPG Polling - FrenCon 2026"
+  description="Nominate TTRPGs to play at FrenCon"
+>
   <h1>TTRPG Nominations</h1>
-  <p>Nominate tabletop RPGs you'd like to play. Sign in to add your nominations.</p>
-  <TTRPGNominations client:load />
+  <p>
+    Nominate tabletop RPGs you'd like to play. Sign in to add your nominations.
+  </p>
+  <TTRPGNominations user={user} />
 </Layout>

@@ -8,8 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface Idea {
   id: string;
@@ -19,8 +18,11 @@ interface Idea {
   createdAt: unknown;
 }
 
-function RoundtableIdeasInner() {
-  const { user } = useAuth();
+interface RoundtableIdeasProps {
+  user: AuthUser | null;
+}
+
+export default function RoundtableIdeas({ user }: RoundtableIdeasProps) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [topic, setTopic] = useState('');
   const [notes, setNotes] = useState('');
@@ -118,13 +120,5 @@ function RoundtableIdeasInner() {
         ))}
       </ul>
     </div>
-  );
-}
-
-export function RoundtableIdeas() {
-  return (
-    <ProtectedContent>
-      <RoundtableIdeasInner />
-    </ProtectedContent>
   );
 }

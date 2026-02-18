@@ -8,8 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface Video {
   id: string;
@@ -22,12 +21,10 @@ interface Video {
 }
 
 function getEmbedUrl(url: string): string {
-  // Support YouTube URLs
   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
   if (ytMatch) {
     return `https://www.youtube.com/embed/${ytMatch[1]}`;
   }
-  // Support Vimeo
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
     return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
@@ -60,8 +57,11 @@ function VideoGrid({ videos }: { videos: Video[] }) {
   );
 }
 
-function AddVideoForm() {
-  const { user } = useAuth();
+interface AddVideoFormProps {
+  user: AuthUser | null;
+}
+
+function AddVideoForm({ user }: AddVideoFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
@@ -96,40 +96,40 @@ function AddVideoForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Title</label>
-          <input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            placeholder="Video title"
-          />
-        </div>
-        <div>
-          <label htmlFor="url">URL (YouTube or Vimeo)</label>
-          <input
-            id="url"
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-            placeholder="https://www.youtube.com/watch?v=..."
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description (optional)</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Video description"
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Adding...' : 'Add Video'}
-        </button>
-      </form>
+      <div>
+        <label htmlFor="title">Title</label>
+        <input
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          placeholder="Video title"
+        />
+      </div>
+      <div>
+        <label htmlFor="url">URL (YouTube or Vimeo)</label>
+        <input
+          id="url"
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          required
+          placeholder="https://www.youtube.com/watch?v=..."
+        />
+      </div>
+      <div>
+        <label htmlFor="description">Description (optional)</label>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Video description"
+        />
+      </div>
+      <button type="submit" disabled={loading}>
+        {loading ? 'Adding...' : 'Add Video'}
+      </button>
+    </form>
   );
 }
 
@@ -163,10 +163,6 @@ function VideosListInner() {
 
   return (
     <div>
-      <ProtectedContent fallback={<p>Sign in to add videos.</p>}>
-        <h2>Add Video</h2>
-        <AddVideoForm />
-      </ProtectedContent>
       <h2>Videos</h2>
       {videos.length > 0 ? (
         <VideoGrid videos={videos} />
@@ -177,6 +173,22 @@ function VideosListInner() {
   );
 }
 
-export function VideosList() {
-  return <VideosListInner />;
+interface VideosListProps {
+  user: AuthUser | null;
+}
+
+export default function VideosList({ user }: VideosListProps) {
+  return (
+    <div>
+      {user ? (
+        <>
+          <h2>Add Video</h2>
+          <AddVideoForm user={user} />
+        </>
+      ) : (
+        <p>Sign in to add videos.</p>
+      )}
+      <VideosListInner />
+    </div>
+  );
 }

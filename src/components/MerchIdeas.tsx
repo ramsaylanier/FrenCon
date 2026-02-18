@@ -8,8 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface MerchIdea {
   id: string;
@@ -19,8 +18,11 @@ interface MerchIdea {
   createdAt: unknown;
 }
 
-function MerchIdeasInner() {
-  const { user } = useAuth();
+interface MerchIdeasProps {
+  user: AuthUser | null;
+}
+
+export default function MerchIdeas({ user }: MerchIdeasProps) {
   const [ideas, setIdeas] = useState<MerchIdea[]>([]);
   const [item, setItem] = useState('');
   const [description, setDescription] = useState('');
@@ -118,13 +120,5 @@ function MerchIdeasInner() {
         ))}
       </ul>
     </div>
-  );
-}
-
-export function MerchIdeas() {
-  return (
-    <ProtectedContent>
-      <MerchIdeasInner />
-    </ProtectedContent>
   );
 }

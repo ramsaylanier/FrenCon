@@ -1,28 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  inMemoryPersistence,
 } from 'firebase/auth';
-import { getFirebaseAuth } from '../lib/firebase';
+import { auth } from '../firebase/client';
 
 interface SignInFormProps {
   onSuccess?: () => void;
 }
 
-export function SignInForm({ onSuccess }: SignInFormProps) {
+export default function SignInForm({ onSuccess }: SignInFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    auth.setPersistence(inMemoryPersistence);
+  }, []);
+
+  const signInWithToken = async (idToken: string) => {
+    const url = new URL('/api/auth/signin', window.location.origin);
+    url.searchParams.set('redirect', new URLSearchParams(window.location.search).get('redirect') || '/');
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${idToken}` },
+    });
+    if (response.redirected) {
+      window.location.assign(response.url);
+    }
+  };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      const auth = getFirebaseAuth();
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await userCredential.user.getIdToken();
+      await signInWithToken(idToken);
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
@@ -35,9 +53,10 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
     setError(null);
     setLoading(true);
     try {
-      const auth = getFirebaseAuth();
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      const idToken = await userCredential.user.getIdToken();
+      await signInWithToken(idToken);
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google sign in failed');

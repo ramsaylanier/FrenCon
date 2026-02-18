@@ -1,14 +1,15 @@
-import { useAuth } from './AuthProvider';
-import { UserMenu } from './UserMenu';
+import UserMenu from './UserMenu';
+import type { AuthUser } from '../lib/auth';
 
-export function Nav() {
-  const { user, loading } = useAuth();
+interface NavProps {
+  user: AuthUser | null;
+}
 
+export default function Nav({ user }: NavProps) {
   return (
     <nav>
-      {loading && <p>Loading...</p>}
       <a href="/">FrenCon</a>
-      {!loading && user && (
+      {user && (
         <>
           <a href="/games">Games</a>
           <a href="/polling">Polling</a>
@@ -16,12 +17,18 @@ export function Nav() {
           <a href="/ttrpg">TTRPG</a>
         </>
       )}
-      <a href="/merch">Merch</a>
+      {/* <a href="/merch">Merch</a> */}
       <a href="/videos">Videos</a>
       <a href="/blog">Blog</a>
-      <a href="/profile">Profile</a>
-      {!loading && !user && <a href="/login">Log In</a>}
-      <UserMenu />
+
+      {user && (
+        <>
+          <a href="/profile">Profile</a>
+          <UserMenu user={user} />
+        </>
+      )}
+      {!user && <a href="/login">Log In</a>}
+
     </nav>
   );
 }

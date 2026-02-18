@@ -6,7 +6,7 @@ import {
   onSnapshot,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface GameNomination {
   id: string;
@@ -22,7 +22,11 @@ interface TTRPGNomination {
   nominatedBy: string;
 }
 
-function PollingResultsInner() {
+interface PollingResultsProps {
+  user: AuthUser | null;
+}
+
+export default function PollingResults({ user }: PollingResultsProps) {
   const [games, setGames] = useState<GameNomination[]>([]);
   const [ttrpgs, setTtrpgs] = useState<TTRPGNomination[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -98,13 +102,5 @@ function PollingResultsInner() {
       </ol>
       {ttrpgs.length === 0 && <p>No nominations yet.</p>}
     </div>
-  );
-}
-
-export function PollingResults() {
-  return (
-    <ProtectedContent>
-      <PollingResultsInner />
-    </ProtectedContent>
   );
 }

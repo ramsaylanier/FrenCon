@@ -8,8 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface Nomination {
   id: string;
@@ -20,8 +19,8 @@ interface Nomination {
   createdAt: unknown;
 }
 
-function GameNominationsInner() {
-  const { user } = useAuth();
+export default function GameNominations({user}: {user: AuthUser | null}) {
+  
   const [nominations, setNominations] = useState<Nomination[]>([]);
   const [gameName, setGameName] = useState('');
   const [description, setDescription] = useState('');
@@ -29,8 +28,7 @@ function GameNominationsInner() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-
-    const db = getFirebaseDb();    
+    const db = getFirebaseDb();
     const q = query(
       collection(db, 'gameNominations'),
       orderBy('createdAt', 'desc')
@@ -119,10 +117,4 @@ function GameNominationsInner() {
   );
 }
 
-export function GameNominations() {
-  return (
-    <ProtectedContent>
-      <GameNominationsInner />
-    </ProtectedContent>
-  );
-}
+

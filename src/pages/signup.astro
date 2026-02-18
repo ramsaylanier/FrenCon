@@ -1,6 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { SignUpForm } from '../components/SignUpForm';
+import SignUpForm from '../components/SignUpForm';
+
+if (Astro.locals.user) {
+  return Astro.redirect('/');
+}
 ---
 
 <Layout title="Sign Up - FrenCon 2026">

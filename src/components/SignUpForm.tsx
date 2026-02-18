@@ -1,21 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  inMemoryPersistence,
 } from 'firebase/auth';
-import { getFirebaseAuth } from '../lib/firebase';
+import { auth } from '../firebase/client';
 
 interface SignUpFormProps {
   onSuccess?: () => void;
 }
 
-export function SignUpForm({ onSuccess }: SignUpFormProps) {
+export default function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    auth.setPersistence(inMemoryPersistence);
+  }, []);
+
+  const signInWithToken = async (idToken: string) => {
+    const response = await fetch('/api/auth/signin', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${idToken}` },
+    });
+    if (response.redirected) {
+      window.location.assign(response.url);
+    }
+  };
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +45,9 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     }
     setLoading(true);
     try {
-      const auth = getFirebaseAuth();
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const idToken = await userCredential.user.getIdToken();
+      await signInWithToken(idToken);
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign up failed');
@@ -44,9 +60,10 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     setError(null);
     setLoading(true);
     try {
-      const auth = getFirebaseAuth();
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      const idToken = await userCredential.user.getIdToken();
+      await signInWithToken(idToken);
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google sign up failed');

@@ -6,8 +6,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '../lib/firebase';
-import { useAuth } from './AuthProvider';
-import { ProtectedContent } from './ProtectedContent';
+import type { AuthUser } from '../lib/auth';
 
 interface UserProfile {
   displayName: string;
@@ -15,8 +14,11 @@ interface UserProfile {
   travelPreferences: string;
 }
 
-function ProfileFormInner() {
-  const { user } = useAuth();
+interface ProfileFormProps {
+  user: AuthUser | null;
+}
+
+export default function ProfileForm({ user }: ProfileFormProps) {
   const [displayName, setDisplayName] = useState('');
   const [dietaryRestrictions, setDietaryRestrictions] = useState('');
   const [travelPreferences, setTravelPreferences] = useState('');
@@ -112,13 +114,5 @@ function ProfileFormInner() {
         </button>
       </form>
     </div>
-  );
-}
-
-export function ProfileForm() {
-  return (
-    <ProtectedContent>
-      <ProfileFormInner />
-    </ProtectedContent>
   );
 }

@@ -1,10 +1,22 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { GameNominations } from '../components/GameNominations';
+import Layout from "../layouts/Layout.astro";
+import GameNominations from "../components/GameNominations";
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect("/signin");
+}
 ---
 
-<Layout title="Game Nominations - FrenCon 2026" description="Nominate board games to play at FrenCon">
+<Layout
+  title="Game Nominations - FrenCon 2026"
+  description="Nominate board games to play at FrenCon"
+>
   <h1>Game Nominations</h1>
-  <p>Nominate games you'd like to play at FrenCon. Sign in to add your nominations.</p>
-  <GameNominations client:load />
+  <p>
+    Nominate games you'd like to play at FrenCon. Sign in to add your
+    nominations.
+  </p>
+  <GameNominations user={user} />
 </Layout>

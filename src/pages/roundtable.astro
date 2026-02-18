@@ -1,10 +1,21 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { RoundtableIdeas } from '../components/RoundtableIdeas';
+import Layout from "../layouts/Layout.astro";
+import RoundtableIdeas from "../components/RoundtableIdeas";
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect(
+    `/signin?redirect=${encodeURIComponent(Astro.url.pathname)}`,
+  );
+}
 ---
 
-<Layout title="Roundtable Ideas - FrenCon 2026" description="Roundtable discussion topics for FrenCon">
+<Layout
+  title="Roundtable Ideas - FrenCon 2026"
+  description="Roundtable discussion topics for FrenCon"
+>
   <h1>Roundtable Ideas</h1>
   <p>Suggest topics for roundtable discussions. Sign in to add your ideas.</p>
-  <RoundtableIdeas client:load />
+  <RoundtableIdeas user={user} />
 </Layout>

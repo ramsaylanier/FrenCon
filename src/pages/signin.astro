@@ -1,6 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { SignInForm } from '../components/SignInForm';
+import SignInForm from '../components/SignInForm';
+
+if (Astro.locals.user) {
+  const url = new URL(Astro.request.url);
+  const redirectTo = url.searchParams.get('redirect') || '/';
+  return Astro.redirect(redirectTo);
+}
 ---
 
 <Layout title="Log In - FrenCon 2026">

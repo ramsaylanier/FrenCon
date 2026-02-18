@@ -1,10 +1,21 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { PollingResults } from '../components/PollingResults';
+import Layout from "../layouts/Layout.astro";
+import PollingResults from "../components/PollingResults";
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect(
+    `/signin?redirect=${encodeURIComponent(Astro.url.pathname)}`,
+  );
+}
 ---
 
-<Layout title="Polling Results - FrenCon 2026" description="Poll results for games and TTRPGs">
+<Layout
+  title="Polling Results - FrenCon 2026"
+  description="Poll results for games and TTRPGs"
+>
   <h1>Polling Results</h1>
   <p>See how the nominations are ranking. Sign in to view.</p>
-  <PollingResults client:load />
+  <PollingResults user={user} />
 </Layout>
