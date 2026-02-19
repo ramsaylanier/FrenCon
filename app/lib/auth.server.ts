@@ -1,4 +1,4 @@
-import { app } from "./firebase.server";
+import { getApp } from "./firebase.server";
 import { getAuth } from "firebase-admin/auth";
 import type { AuthUser } from "./types";
 
@@ -13,6 +13,9 @@ function getSessionCookie(request: Request): string | null {
 }
 
 export async function getSessionUser(request: Request): Promise<AuthUser | null> {
+  const app = getApp();
+  if (!app) return null;
+
   const auth = getAuth(app);
   const sessionCookie = getSessionCookie(request);
 

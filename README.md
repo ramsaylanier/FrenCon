@@ -1,6 +1,6 @@
 # FrenCon 2026
 
-A board game convention website built with Astro, Firebase Auth, and Firestore.
+A board game convention website built with React Router, Firebase Auth, and Firestore. Deploys to Vercel.
 
 ## Setup
 
@@ -18,7 +18,7 @@ The project is already configured for Firebase project `frencon-2026`. The `.env
 firebase use <project-id>
 ```
 
-Then update `.env` with your Firebase config from the [Firebase Console](https://console.firebase.google.com/). Use the `PUBLIC_` prefix for all variables (Astro only exposes `PUBLIC_*` to client-side code).
+Then update `.env` with your Firebase config from the [Firebase Console](https://console.firebase.google.com/). Use `VITE_` prefix for client-side vars (e.g. `VITE_FIREBASE_API_KEY`) and set server vars in `.env` for local dev or Vercel Environment Variables for production.
 
 ### 3. Enable Authentication providers
 
@@ -41,7 +41,7 @@ firebase deploy --only firestore
 npm run dev
 ```
 
-Visit http://localhost:4321
+Visit http://localhost:5173
 
 ### 6. Seed from spreadsheet (optional)
 
@@ -52,12 +52,13 @@ To import board games, TTRPGs, and votes from a Google Spreadsheet:
 
 See [scripts/README.md](scripts/README.md) for details.
 
-### 7. Deploy
+### 7. Deploy (Vercel)
 
-```bash
-npm run build
-firebase deploy --only hosting
-```
+1. Push your code to GitHub and [import the project in Vercel](https://vercel.com/new).
+2. Add your Firebase env vars in Vercel: Project Settings → Environment Variables (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, etc.).
+3. Deployments happen automatically on push. Or run `npm run deploy` (requires Vercel CLI: `npm i -g vercel`).
+
+For Firestore rules, use `firebase deploy --only firestore` separately.
 
 ## Features
 
@@ -68,12 +69,12 @@ firebase deploy --only hosting
 - **Polling Results** — View vote rankings
 - **Merchandise** — Suggest merch ideas
 - **Videos** — Add and watch videos (YouTube/Vimeo)
-- **Blog** — Markdown blog posts in `src/content/blog/`
+- **Blog** — Markdown blog posts in `app/content/blog/`
 - **Profile** — Dietary restrictions and travel preferences
 
 ## Adding blog posts
 
-Create `.md` files in `src/content/blog/` with frontmatter:
+Create `.md` files in `app/content/blog/` with frontmatter:
 
 ```md
 ---

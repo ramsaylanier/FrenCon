@@ -1,9 +1,11 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 import { getAuth } from "firebase-admin/auth";
-import { app } from "~/lib/firebase.server";
+import { getApp } from "~/lib/firebase.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const app = getApp();
+  if (!app) return new Response("Auth unavailable", { status: 503 });
   const auth = getAuth(app);
 
   const idToken = request.headers.get("Authorization")?.split("Bearer ")[1];

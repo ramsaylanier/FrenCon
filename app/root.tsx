@@ -12,8 +12,12 @@ import Nav from "./components/Nav";
 import "./styles/global.css";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await getSessionUser(request);
-  return { user };
+  try {
+    const user = await getSessionUser(request);
+    return { user };
+  } catch {
+    return { user: null };
+  }
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,344 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "routes/_index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/signin": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/games": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/roundtable": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/merch": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/videos": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/blog._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/blog.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.auth.signin": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.auth.signout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/$": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.tsx",
+        "path": "",
+        "config": {}
+      },
+      "routes/_index": {
+        "id": "routes/_index",
+        "parentId": "root",
+        "file": "app/routes/_index.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/signin": {
+        "id": "routes/signin",
+        "parentId": "root",
+        "file": "app/routes/signin.tsx",
+        "path": "signin",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "root",
+        "file": "app/routes/login.tsx",
+        "path": "login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/games": {
+        "id": "routes/games",
+        "parentId": "root",
+        "file": "app/routes/games.tsx",
+        "path": "games",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/roundtable": {
+        "id": "routes/roundtable",
+        "parentId": "root",
+        "file": "app/routes/roundtable.tsx",
+        "path": "roundtable",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/merch": {
+        "id": "routes/merch",
+        "parentId": "root",
+        "file": "app/routes/merch.tsx",
+        "path": "merch",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/videos": {
+        "id": "routes/videos",
+        "parentId": "root",
+        "file": "app/routes/videos.tsx",
+        "path": "videos",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/profile": {
+        "id": "routes/profile",
+        "parentId": "root",
+        "file": "app/routes/profile.tsx",
+        "path": "profile",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/blog": {
+        "id": "routes/blog",
+        "parentId": "root",
+        "file": "app/routes/blog.tsx",
+        "config": {}
+      },
+      "routes/blog._index": {
+        "id": "routes/blog._index",
+        "parentId": "routes/blog",
+        "file": "app/routes/blog._index.tsx",
+        "path": "blog",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/blog.$slug": {
+        "id": "routes/blog.$slug",
+        "parentId": "routes/blog",
+        "file": "app/routes/blog.$slug.tsx",
+        "path": "blog/:slug",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.auth.signin": {
+        "id": "routes/api.auth.signin",
+        "parentId": "root",
+        "file": "app/routes/api.auth.signin.ts",
+        "path": "api/auth/signin",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.auth.signout": {
+        "id": "routes/api.auth.signout",
+        "parentId": "root",
+        "file": "app/routes/api.auth.signout.ts",
+        "path": "api/auth/signout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/$": {
+        "id": "routes/$",
+        "parentId": "root",
+        "file": "app/routes/$.tsx",
+        "path": "*",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "/Users/ramsaylanier/Projects/FrenCon/app",
+    "basename": "/",
+    "buildDirectory": "/Users/ramsaylanier/Projects/FrenCon/build",
+    "future": {
+      "unstable_optimizeDeps": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_trailingSlashAwareDataRequests": false,
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.tsx",
+        "path": ""
+      },
+      "routes/_index": {
+        "id": "routes/_index",
+        "parentId": "root",
+        "file": "./routes/_index.tsx",
+        "index": true
+      },
+      "routes/signin": {
+        "id": "routes/signin",
+        "parentId": "root",
+        "file": "./routes/signin.tsx",
+        "path": "signin"
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "root",
+        "file": "./routes/login.tsx",
+        "path": "login"
+      },
+      "routes/games": {
+        "id": "routes/games",
+        "parentId": "root",
+        "file": "./routes/games.tsx",
+        "path": "games"
+      },
+      "routes/roundtable": {
+        "id": "routes/roundtable",
+        "parentId": "root",
+        "file": "./routes/roundtable.tsx",
+        "path": "roundtable"
+      },
+      "routes/merch": {
+        "id": "routes/merch",
+        "parentId": "root",
+        "file": "./routes/merch.tsx",
+        "path": "merch"
+      },
+      "routes/videos": {
+        "id": "routes/videos",
+        "parentId": "root",
+        "file": "./routes/videos.tsx",
+        "path": "videos"
+      },
+      "routes/profile": {
+        "id": "routes/profile",
+        "parentId": "root",
+        "file": "./routes/profile.tsx",
+        "path": "profile"
+      },
+      "routes/blog": {
+        "id": "routes/blog",
+        "parentId": "root",
+        "file": "./routes/blog.tsx"
+      },
+      "routes/blog._index": {
+        "id": "routes/blog._index",
+        "parentId": "routes/blog",
+        "file": "./routes/blog._index.tsx",
+        "path": "blog",
+        "index": true
+      },
+      "routes/blog.$slug": {
+        "id": "routes/blog.$slug",
+        "parentId": "routes/blog",
+        "file": "./routes/blog.$slug.tsx",
+        "path": "blog/:slug"
+      },
+      "routes/api.auth.signin": {
+        "id": "routes/api.auth.signin",
+        "parentId": "root",
+        "file": "./routes/api.auth.signin.ts",
+        "path": "api/auth/signin"
+      },
+      "routes/api.auth.signout": {
+        "id": "routes/api.auth.signout",
+        "parentId": "root",
+        "file": "./routes/api.auth.signout.ts",
+        "path": "api/auth/signout"
+      },
+      "routes/$": {
+        "id": "routes/$",
+        "parentId": "root",
+        "file": "./routes/$.tsx",
+        "path": "*"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "allowedActionOrigins": false,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.tsx",
+        "children": [
+          {
+            "file": "./routes/_index.tsx",
+            "index": true
+          },
+          {
+            "file": "./routes/signin.tsx",
+            "path": "signin"
+          },
+          {
+            "file": "./routes/login.tsx",
+            "path": "login"
+          },
+          {
+            "file": "./routes/games.tsx",
+            "path": "games"
+          },
+          {
+            "file": "./routes/roundtable.tsx",
+            "path": "roundtable"
+          },
+          {
+            "file": "./routes/merch.tsx",
+            "path": "merch"
+          },
+          {
+            "file": "./routes/videos.tsx",
+            "path": "videos"
+          },
+          {
+            "file": "./routes/profile.tsx",
+            "path": "profile"
+          },
+          {
+            "file": "./routes/blog.tsx",
+            "children": [
+              {
+                "file": "./routes/blog._index.tsx",
+                "index": true,
+                "path": "blog"
+              },
+              {
+                "file": "./routes/blog.$slug.tsx",
+                "path": "blog/:slug"
+              }
+            ]
+          },
+          {
+            "file": "./routes/api.auth.signin.ts",
+            "path": "api/auth/signin"
+          },
+          {
+            "file": "./routes/api.auth.signout.ts",
+            "path": "api/auth/signout"
+          },
+          {
+            "file": "./routes/$.tsx",
+            "path": "*"
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}

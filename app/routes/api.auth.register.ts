@@ -1,9 +1,11 @@
 import type { ActionFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 import { getAuth } from "firebase-admin/auth";
-import { app } from "~/lib/firebase.server";
+import { getApp } from "~/lib/firebase.server";
 
 export async function action({ request }: ActionFunctionArgs) {
+  const app = getApp();
+  if (!app) return new Response("Auth unavailable", { status: 503 });
   const auth = getAuth(app);
 
   const formData = await request.formData();
