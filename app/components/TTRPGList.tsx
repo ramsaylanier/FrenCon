@@ -4,16 +4,15 @@ import {
   query,
   where,
   onSnapshot,
-  addDoc,
   doc,
   setDoc,
   getDocs,
+  writeBatch,
 } from "firebase/firestore";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -21,10 +20,8 @@ import {
 } from "@tanstack/react-table";
 import { db } from "~/lib/firebase.client";
 import { Alert, AlertDescription } from "~/components/ui/alert";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -32,16 +29,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import TTRPGFormDialog from "~/components/TTRPGFormDialog";
+import { cn } from "~/lib/utils";
+import { DataTable } from "~/components/DataTable";
+import { Button } from "~/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import type { AuthUser } from "~/lib/types";
 import type { TTRPG, TTRPGStyle, TTRPGCategory } from "~/lib/types";
+
+function voteCellClass(value: 0 | 1 | 2): string {
+  switch (value) {
+    case 2:
+      return "bg-green-500/15 text-green-800 dark:bg-green-500/20 dark:text-green-200";
+    case 1:
+      return "bg-yellow-500/15 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-200";
+    case 0:
+    default:
+      return "bg-red-500/15 text-red-800 dark:bg-red-500/20 dark:text-red-200";
+  }
+}
 
 interface TTRPGRow extends TTRPG {
   votesByUser: Record<string, number>;
@@ -64,13 +77,9 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
   const [error, setError] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([{ id: "total", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const [title, setTitle] = useState("");
-  const [vibe, setVibe] = useState("");
-  const [style, setStyle] = useState<TTRPGStyle>("hybrid");
-  const [category, setCategory] = useState<TTRPGCategory>("oneshot");
-  const [gmsInput, setGmsInput] = useState("");
-  const [adding, setAdding] = useState(false);
+  const [columnPinning, setColumnPinning] = useState({ left: ["title"] as string[], right: ["total"] as string[] });
+  const [ttrpgToDelete, setTtrpgToDelete] = useState<TTRPGRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const unsubTtrpgs = onSnapshot(
@@ -171,40 +180,32 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
     [user]
   );
 
-  const handleAddGame = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    setAdding(true);
-    setError(null);
-    try {
-      const gms = gmsInput
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-      await addDoc(collection(db, "ttrpgs"), {
-        title,
-        vibe,
-        style,
-        category,
-        gms,
-      });
-      setTitle("");
-      setVibe("");
-      setStyle("hybrid");
-      setCategory("oneshot");
-      setGmsInput("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add game");
-    } finally {
-      setAdding(false);
-    }
-  };
+  const handleDelete = useCallback(
+    async (game: TTRPGRow) => {
+      if (!user || game.owner !== user.uid) return;
+      setDeleting(true);
+      setError(null);
+      try {
+        const batch = writeBatch(db);
+        // Delete the TTRPG; votes are left as orphaned (rules prevent deleting others' votes)
+        batch.delete(doc(db, "ttrpgs", game.id));
+        await batch.commit();
+        setTtrpgToDelete(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to delete TTRPG");
+      } finally {
+        setDeleting(false);
+      }
+    },
+    [user]
+  );
 
   const columns = useMemo<ColumnDef<TTRPGRow>[]>(() => {
     const cols: ColumnDef<TTRPGRow>[] = [
       {
         accessorKey: "title",
         header: "Title",
+        meta: { stickyWidth: 200 },
         filterFn: "includesString",
       },
       {
@@ -227,13 +228,11 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
         header: "GMs",
         cell: ({ getValue }) => {
           const gms = getValue() as string[] | undefined;
-          return gms?.length ? gms.join(", ") : "—";
+          if (!gms?.length) return "—";
+          return gms
+            .map((uid) => userDisplayNames.get(uid) ?? uid.slice(0, 8))
+            .join(", ");
         },
-      },
-      {
-        accessorKey: "total",
-        header: "Total",
-        cell: ({ getValue }) => <span className="font-medium">{getValue() as number}</span>,
       },
       ...userList.map(
         (uid): ColumnDef<TTRPGRow> => ({
@@ -244,13 +243,14 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
             const gameId = row.original.id;
             const value = (row.original.votesByUser[uid] ?? 0) as 0 | 1 | 2;
             const isCurrentUser = user?.uid === uid;
+            const cellClass = cn("inline-flex items-center justify-center rounded px-2 py-0.5 min-w-[2rem]", voteCellClass(value));
             if (isCurrentUser) {
               return (
                 <Select
                   value={String(value)}
                   onValueChange={(v) => handleVoteChange(gameId, Number(v) as 0 | 1 | 2)}
                 >
-                  <SelectTrigger className="h-8 w-16">
+                  <SelectTrigger className={cn("h-8 w-16", voteCellClass(value))}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -261,20 +261,50 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
                 </Select>
               );
             }
-            return <span>{value}</span>;
+            return <span className={cellClass}>{value}</span>;
           },
         })
       ),
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => {
+          const game = row.original;
+          const isOwner = user && game.owner === user.uid;
+          if (!isOwner) return null;
+          return (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setTtrpgToDelete(game)}
+            >
+              Remove
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "total",
+        header: "Total",
+        meta: { stickyWidth: 80 },
+        cell: ({ getValue }) => <span className="font-medium">{getValue() as number}</span>,
+      },
     ];
     return cols;
-  }, [userList, userDisplayNames, user, handleVoteChange]);
+  }, [userList, userDisplayNames, user, handleVoteChange, handleDelete]);
 
   const table = useReactTable({
     data: rows,
     columns,
-    state: { sorting, columnFilters },
+    state: { sorting, columnFilters, columnPinning },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnPinningChange: (updater) =>
+      setColumnPinning((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        return { left: next.left ?? [], right: next.right ?? [] };
+      }),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -291,84 +321,14 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Add TTRPG</h2>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAddGame} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  placeholder="e.g. D&D 5e, Blades in the Dark"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="vibe">Vibe</Label>
-                <Input
-                  id="vibe"
-                  value={vibe}
-                  onChange={(e) => setVibe(e.target.value)}
-                  placeholder="e.g. Dark fantasy, heist"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="style">Style</Label>
-                <Select value={style} onValueChange={(v) => setStyle(v as TTRPGStyle)}>
-                  <SelectTrigger id="style">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TTRPG_STYLES.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={(v) => setCategory(v as TTRPGCategory)}>
-                  <SelectTrigger id="category">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TTRPG_CATEGORIES.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {c}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="gms">GMs (user IDs, comma-separated)</Label>
-                <Input
-                  id="gms"
-                  value={gmsInput}
-                  onChange={(e) => setGmsInput(e.target.value)}
-                  placeholder="e.g. uid1, uid2"
-                />
-              </div>
-            </div>
-            <Button type="submit" disabled={adding}>
-              {adding ? "Adding..." : "Add TTRPG"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <h2 className="text-lg font-semibold">TTRPGs</h2>
-          <p className="text-muted-foreground text-sm">
-            Vote: 0 = skip, 1 = interested, 2 = want to play. Click column headers to sort.
-          </p>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div>
+            <h2 className="text-lg font-semibold">TTRPGs</h2>
+            <p className="text-muted-foreground text-sm">
+              Vote: 0 = skip, 1 = interested, 2 = want to play. Click column headers to sort.
+            </p>
+          </div>
+          <TTRPGFormDialog user={user} onError={setError} />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -422,62 +382,38 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          <div
-                            className={
-                              header.column.getCanSort()
-                                ? "cursor-pointer select-none hover:underline"
-                                : ""
-                            }
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {{
-                              asc: " ↑",
-                              desc: " ↓",
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        Loading...
-                      </TableCell>
-                    </TableRow>
-                  ) : table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        No TTRPGs yet. Add one above.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            <DataTable
+              table={table}
+              loading={loading}
+              emptyMessage="No TTRPGs yet. Add one using the button above."
+            />
           </div>
         </CardContent>
       </Card>
+      <Dialog open={!!ttrpgToDelete} onOpenChange={(open) => !open && setTtrpgToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove TTRPG?</DialogTitle>
+            <DialogDescription>
+              {ttrpgToDelete
+                ? `Remove "${ttrpgToDelete.title}" from the list? This cannot be undone.`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTtrpgToDelete(null)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => ttrpgToDelete && handleDelete(ttrpgToDelete)}
+              disabled={deleting}
+            >
+              {deleting ? "Removing..." : "Remove"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

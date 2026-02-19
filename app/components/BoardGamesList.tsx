@@ -4,27 +4,26 @@ import {
   query,
   where,
   onSnapshot,
-  addDoc,
   doc,
   setDoc,
   getDocs,
+  writeBatch,
 } from "firebase/firestore";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { db } from "~/lib/firebase.client";
+import AddBoardGameDialog from "~/components/AddBoardGameDialog";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -32,14 +31,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { DataTable } from "~/components/DataTable";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import type { AuthUser } from "~/lib/types";
 import type { BoardGame, GameWeight } from "~/lib/types";
 
@@ -63,21 +63,14 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
   const [error, setError] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([{ id: "total", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  // Add game form state
-  const [title, setTitle] = useState("");
-  const [boardGameGeekLink, setBoardGameGeekLink] = useState("");
-  const [weight, setWeight] = useState<GameWeight>("medium");
-  const [playerCount, setPlayerCount] = useState("");
-  const [teacher, setTeacher] = useState("");
-  const [owner, setOwner] = useState("");
-  const [adding, setAdding] = useState(false);
+  const [columnPinning, setColumnPinning] = useState({ left: ["title"] as string[], right: ["total"] as string[] });
+  const [gameToDelete, setGameToDelete] = useState<BoardGameRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const unsubGames = onSnapshot(
       collection(db, "boardGames"),
       (snapshot) => {
-        console.log("snapshot", snapshot.docs.map((doc) => doc.data()));
         setGames(
           snapshot.docs.map((doc) => ({
             id: doc.id,
@@ -173,48 +166,45 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
     [user]
   );
 
-  const handleAddGame = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    setError(null);
-    setAdding(true);
-    try {
-      await addDoc(collection(db, "boardGames"), {
-        title,
-        boardGameGeekLink: boardGameGeekLink || "",
-        weight,
-        playerCount,
-        teacher,
-        owner,
-      });
-      setTitle("");
-      setBoardGameGeekLink("");
-      setWeight("medium");
-      setPlayerCount("");
-      setTeacher("");
-      setOwner("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add game");
-    } finally {
-      setAdding(false);
-    }
-  };
+  const handleDelete = useCallback(
+    async (game: BoardGameRow) => {
+      if (!user || game.owner !== user.uid) return;
+      setDeleting(true);
+      setError(null);
+      try {
+        const batch = writeBatch(db);
+        // Delete the game; votes are left as orphaned (rules prevent deleting others' votes)
+        batch.delete(doc(db, "boardGames", game.id));
+        await batch.commit();
+        setGameToDelete(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to delete game");
+      } finally {
+        setDeleting(false);
+      }
+    },
+    [user]
+  );
 
   const columns = useMemo<ColumnDef<BoardGameRow>[]>(() => {
     const cols: ColumnDef<BoardGameRow>[] = [
       {
         accessorKey: "title",
         header: "Title",
-        cell: ({ row }) => (
-          <a
-            href={row.original.boardGameGeekLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline hover:no-underline"
-          >
-            {row.original.title}
-          </a>
-        ),
+        meta: { stickyWidth: 200 },
+        cell: ({ row }) => {
+          const searchUrl = `https://boardgamegeek.com/geeksearch.php?action=search&objecttype=boardgame&q=${encodeURIComponent(row.original.title)}`;
+          return (
+            <a
+              href={searchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline hover:no-underline"
+            >
+              {row.original.title}
+            </a>
+          );
+        },
         filterFn: "includesString",
       },
       {
@@ -226,11 +216,6 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
         accessorKey: "playerCount",
         header: "Players",
       },
-      {
-        accessorKey: "total",
-        header: "Total",
-        cell: ({ getValue }) => <span className="font-medium">{getValue() as number}</span>,
-      },
       ...userList.map(
         (uid): ColumnDef<BoardGameRow> => ({
           id: `vote_${uid}`,
@@ -240,37 +225,69 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
             const gameId = row.original.id;
             const value = (row.original.votesByUser[uid] ?? 0) as 0 | 1 | 2;
             const isCurrentUser = user?.uid === uid;
-            if (isCurrentUser) {
-              return (
-                <Select
-                  value={String(value)}
-                  onValueChange={(v) => handleVoteChange(gameId, Number(v) as 0 | 1 | 2)}
-                >
-                  <SelectTrigger className="h-8 w-16">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0</SelectItem>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                  </SelectContent>
-                </Select>
-              );
-            }
-            return <span>{value}</span>;
+            const voteBgClass =
+              value === 2 ? "bg-green-100" : value === 1 ? "bg-yellow-100" : "bg-red-100";
+            const content = isCurrentUser ? (
+              <Select
+                value={String(value)}
+                onValueChange={(v) => handleVoteChange(gameId, Number(v) as 0 | 1 | 2)}
+              >
+                <SelectTrigger className="h-8 w-16">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">0</SelectItem>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <span>{value}</span>
+            );
+            return <div className={`inline-flex rounded px-2 py-1 ${voteBgClass}`}>{content}</div>;
           },
         })
       ),
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => {
+          const game = row.original;
+          const isOwner = user && game.owner === user.uid;
+          if (!isOwner) return null;
+          return (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => setGameToDelete(game)}
+            >
+              Remove
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "total",
+        header: "Total",
+        meta: { stickyWidth: 80 },
+        cell: ({ getValue }) => <span className="font-medium">{getValue() as number}</span>,
+      },
     ];
     return cols;
-  }, [userList, userDisplayNames, user, handleVoteChange]);
+  }, [userList, userDisplayNames, user, handleVoteChange, handleDelete]);
 
   const table = useReactTable({
     data: rows,
     columns,
-    state: { sorting, columnFilters },
+    state: { sorting, columnFilters, columnPinning },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnPinningChange: (updater) =>
+      setColumnPinning((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        return { left: next.left ?? [], right: next.right ?? [] };
+      }),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -285,92 +302,18 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Add Board Game</h2>
+    <>
+      <Card className="h-full">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <div>
+            <h2 className="text-lg font-semibold">Board Games</h2>
+            <p className="text-muted-foreground text-sm">
+              Vote: 0 = skip, 1 = interested, 2 = want to play. Click column headers to sort.
+            </p>
+          </div>
+          <AddBoardGameDialog user={user} onError={setError} />
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAddGame} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  placeholder="e.g. Catan"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="bgg">Board Game Geek Link</Label>
-                <Input
-                  id="bgg"
-                  type="url"
-                  value={boardGameGeekLink}
-                  onChange={(e) => setBoardGameGeekLink(e.target.value)}
-                  placeholder="https://boardgamegeek.com/..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="weight">Weight</Label>
-                <Select value={weight} onValueChange={(v) => setWeight(v as GameWeight)}>
-                  <SelectTrigger id="weight">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {GAME_WEIGHTS.map((w) => (
-                      <SelectItem key={w} value={w}>
-                        {w}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="playerCount">Player Count</Label>
-                <Input
-                  id="playerCount"
-                  value={playerCount}
-                  onChange={(e) => setPlayerCount(e.target.value)}
-                  placeholder="e.g. 2-4"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="teacher">Teacher (userId)</Label>
-                <Input
-                  id="teacher"
-                  value={teacher}
-                  onChange={(e) => setTeacher(e.target.value)}
-                  placeholder="User who can teach"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="owner">Owner (userId)</Label>
-                <Input
-                  id="owner"
-                  value={owner}
-                  onChange={(e) => setOwner(e.target.value)}
-                  placeholder="User who owns the game"
-                />
-              </div>
-            </div>
-            <Button type="submit" disabled={adding}>
-              {adding ? "Adding..." : "Add Game"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Board Games</h2>
-          <p className="text-muted-foreground text-sm">
-            Vote: 0 = skip, 1 = interested, 2 = want to play. Click column headers to sort.
-          </p>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="h-full overflow-scroll">
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <Input
@@ -398,62 +341,38 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          <div
-                            className={
-                              header.column.getCanSort()
-                                ? "cursor-pointer select-none hover:underline"
-                                : ""
-                            }
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {{
-                              asc: " ↑",
-                              desc: " ↓",
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        Loading...
-                      </TableCell>
-                    </TableRow>
-                  ) : table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
-                        No games yet. Add one above.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            <DataTable
+              table={table}
+              loading={loading}
+              emptyMessage="No games yet. Add one above."
+            />
           </div>
         </CardContent>
       </Card>
-    </div>
+      <Dialog open={!!gameToDelete} onOpenChange={(open) => !open && setGameToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove game?</DialogTitle>
+            <DialogDescription>
+              {gameToDelete
+                ? `Remove "${gameToDelete.title}" from the list? This cannot be undone.`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setGameToDelete(null)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => gameToDelete && handleDelete(gameToDelete)}
+              disabled={deleting}
+            >
+              {deleting ? "Removing..." : "Remove"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -22,6 +22,17 @@ export const USER_NAME_TO_EMAIL: Record<string, string> = {
 
 If not set, the script tries to match by Firebase Auth `displayName` (or first name).
 
+## Seed users (display names)
+
+Create Firestore documents in `users/{uid}` with display names from Firebase Auth. Run after users have signed up:
+
+```bash
+npm run seed:users           # Dry run
+npm run seed:users:write     # Write to Firestore
+```
+
+Display name is resolved via `USER_NAME_TO_EMAIL` (email → key is display name), then Auth `displayName`, then email local part, or uid prefix as fallback.
+
 ## Option 1: CSV Import (simplest)
 
 1. Export your spreadsheet sheets as CSV:

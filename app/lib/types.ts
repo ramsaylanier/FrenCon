@@ -26,9 +26,10 @@ export interface TTRPG {
   style: TTRPGStyle;
   category: TTRPGCategory;
   gms: string[];
+  owner?: string;
 }
 
-export type GameType = "boardGame" | "ttrpg";
+export type GameType = "boardGame" | "ttrpg" | "roundtableIdea";
 
 export interface UserVote {
   gameType: GameType;

@@ -1,19 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "~/lib/firebase.client";
+import AddVideoDialog from "~/components/AddVideoDialog";
 import { Alert, AlertDescription } from "~/components/ui/alert";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
 import type { AuthUser } from "~/lib/types";
 
 interface Video {
@@ -71,95 +61,11 @@ function VideoGrid({ videos }: { videos: Video[] }) {
   );
 }
 
-interface AddVideoFormProps {
+interface VideosListProps {
   user: AuthUser | null;
 }
 
-function AddVideoForm({ user }: AddVideoFormProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [url, setUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    setLoading(true);
-    setError(null);
-    try {
-      await addDoc(collection(db, "videos"), {
-        title,
-        description,
-        url,
-        createdBy: user.email ?? user.uid,
-        publishedAt: serverTimestamp(),
-      });
-      setTitle("");
-      setDescription("");
-      setUrl("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add video");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <h2 className="text-lg font-semibold">Add Video</h2>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              placeholder="Video title"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="url">URL (YouTube or Vimeo)</Label>
-            <Input
-              id="url"
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-              placeholder="https://www.youtube.com/watch?v=..."
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Video description"
-            />
-          </div>
-          <Button type="submit" disabled={loading}>
-            {loading ? "Adding..." : "Add Video"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
-
-function VideosListInner() {
+export default function VideosList({ user }: VideosListProps) {
   const [videos, setVideos] = useState<Video[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -193,9 +99,14 @@ function VideosListInner() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <h2 className="text-lg font-semibold">Videos</h2>
+    <Card className="h-full">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <div>
+          <h2 className="text-lg font-semibold">Videos</h2>
+        </div>
+        {user &&
+          <AddVideoDialog user={user} onError={setError} />
+        }
       </CardHeader>
       <CardContent>
         {videos.length > 0 ? (
@@ -205,22 +116,5 @@ function VideosListInner() {
         )}
       </CardContent>
     </Card>
-  );
-}
-
-interface VideosListProps {
-  user: AuthUser | null;
-}
-
-export default function VideosList({ user }: VideosListProps) {
-  return (
-    <div className="space-y-6">
-      {user ? (
-        <AddVideoForm user={user} />
-      ) : (
-        <p className="text-muted-foreground">Sign in to add videos.</p>
-      )}
-      <VideosListInner />
-    </div>
   );
 }

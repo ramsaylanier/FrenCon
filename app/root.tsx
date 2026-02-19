@@ -24,10 +24,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+          rel="stylesheet"
+        />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="grid grid-rows-[50px_1fr_50px] h-[100dvh] overflow-hidden">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -42,14 +48,14 @@ export default function App() {
 
   return (
     <>
-      <header className="border-b border-border pb-4">
+      <header className="border-b border-border py-2 px-2">
         <Nav user={user} />
       </header>
-      <main className="py-6">
+      <main className="h-full overflow-hidden">
         <Outlet />
       </main>
-      <footer className="mt-12 border-t border-border pt-6 text-center text-muted-foreground text-sm">
-        <p>FrenCon 2026 — Board game convention</p>
+      <footer className="flex items-center justify-center text-sm bg-primary">
+        <p className="text-primary-foreground">FrenCon 2026 — Board game convention</p>
       </footer>
     </>
   );

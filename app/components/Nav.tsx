@@ -12,7 +12,11 @@ export default function Nav({ user }: { user: AuthUser | null }) {
     <nav className="flex flex-wrap items-center gap-2">
       <Button variant="ghost" size="sm" asChild>
         <Link to="/" className={cn("font-semibold", navLinkClass)}>
-          FrenCon
+          <img
+            src="/frencon-logo.png"
+            alt="FrenCon"
+            className="h-6 w-auto"
+          />
         </Link>
       </Button>
       {user && (
@@ -23,18 +27,8 @@ export default function Nav({ user }: { user: AuthUser | null }) {
             </Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/polling" className={navLinkClass}>
-              Polling
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
             <Link to="/roundtable" className={navLinkClass}>
               Roundtable
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/ttrpg" className={navLinkClass}>
-              TTRPG
             </Link>
           </Button>
         </>

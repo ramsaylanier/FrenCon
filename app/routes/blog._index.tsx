@@ -19,7 +19,7 @@ export async function loader() {
 export default function BlogIndex() {
   const { posts } = useLoaderData<typeof loader>();
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-6 h-full overflow-auto">
       <div>
         <h1 className="text-2xl font-semibold">Blog</h1>
         <p className="text-muted-foreground">
@@ -27,9 +27,7 @@ export default function BlogIndex() {
         </p>
       </div>
       <Card>
-        <CardHeader>
-          <h2 className="text-lg font-semibold">Posts</h2>
-        </CardHeader>
+
         <CardContent>
           <ul className="space-y-3">
             {posts.map((post) => (

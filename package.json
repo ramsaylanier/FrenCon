@@ -11,13 +11,16 @@
     "seed": "tsx scripts/seed-from-spreadsheet.ts seed",
     "seed:write": "tsx scripts/seed-from-spreadsheet.ts seed --write",
     "seed:csv": "tsx scripts/seed-from-csv.ts seed",
-    "seed:csv:write": "tsx scripts/seed-from-csv.ts seed --write"
+    "seed:csv:write": "tsx scripts/seed-from-csv.ts seed --write",
+    "seed:users": "tsx scripts/seed-users.ts",
+    "seed:users:write": "tsx scripts/seed-users.ts --write"
   },
   "dependencies": {
     "@react-router/node": "^7.13.0",
     "@react-router/serve": "^7.13.0",
     "@tailwindcss/vite": "^4.2.0",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.18",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.3.1",

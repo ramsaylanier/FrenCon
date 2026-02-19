@@ -16,14 +16,7 @@ export default function Videos() {
   const user = data?.user ?? null;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Videos</h1>
-        <p className="text-muted-foreground">
-          Watch FrenCon videos and recordings. Sign in to add videos or view the
-          collection.
-        </p>
-      </div>
+    <div className="space-y-6 px-4 py-6 h-full overflow-hidden">
       <VideosList user={user} />
     </div>
   );

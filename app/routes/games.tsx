@@ -3,12 +3,14 @@ import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { redirect } from "react-router";
 import { getSessionUser } from "~/lib/auth.server";
 import BoardGamesList from "~/components/BoardGamesList";
+import TTRPGList from "~/components/TTRPGList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export const meta: MetaFunction = () => [
-  { title: "Board Games - FrenCon 2026" },
+  { title: "Games - FrenCon 2026" },
   {
     name: "description",
-    content: "Board games to play at FrenCon. Add games and vote.",
+    content: "Board games and TTRPGs to play at FrenCon. Add games and vote.",
   },
 ];
 
@@ -19,22 +21,27 @@ export async function loader({ request }: LoaderFunctionArgs) {
       `/signin?redirect=${encodeURIComponent(new URL(request.url).pathname)}`
     );
   }
-  return { user }; 
+  return { user };
 }
 
 export default function Games() {
   const data = useRouteLoaderData<{ user: Awaited<ReturnType<typeof getSessionUser>> }>("root");
   const user = data?.user ?? null;
- 
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Board Games</h1>
-        <p className="text-muted-foreground">
-          Add board games and vote for what you'd like to play at FrenCon.
-        </p>
-      </div>
-      <BoardGamesList user={user} />
+    <div className="space-y-6 px-4 py-6 h-full overflow-hidden">
+      <Tabs defaultValue="board-games" className="grid grid-cols-1 grid-rows-[auto_1fr] gap-0 h-full w-full overflow-hidden">
+        <TabsList>
+          <TabsTrigger value="board-games">Board Games</TabsTrigger>
+          <TabsTrigger value="ttrpg">TTRPG</TabsTrigger>
+        </TabsList>
+        <TabsContent value="board-games" className="h-full overflow-hidden">
+          <BoardGamesList user={user} />
+        </TabsContent>
+        <TabsContent value="ttrpg">
+          <TTRPGList user={user} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
