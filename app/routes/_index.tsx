@@ -34,7 +34,7 @@ export default function Index() {
           <img
             src="/FrenCon26 text.png"
             alt="FrenCon 2026"
-            className="relative max-w-[min(45vw,600px)] top-[5vh] md:top-[15px] left-[15px] md:left-[25px] w-auto object-contain"
+            className="relative max-w-[min(45vw,600px)] top-[15px] left-[15px] md:left-[25px] w-auto object-contain"
           />
         </div>
 
