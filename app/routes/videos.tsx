@@ -16,7 +16,7 @@ export default function Videos() {
   const user = data?.user ?? null;
 
   return (
-    <div className="space-y-6 px-4 py-6 h-full overflow-hidden">
+    <div className="space-y-6 px-4 py-6 h-full overflow-auto">
       <VideosList user={user} />
     </div>
   );
