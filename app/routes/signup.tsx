@@ -17,12 +17,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function SignUp() {
   return (
-    <>
-      <h1>Sign Up</h1>
+    <div className="mx-auto max-w-md space-y-6">
+      <h1 className="text-2xl font-semibold">Sign Up</h1>
       <SignUpForm />
-      <p>
-        Already have an account? <Link to="/signin">Sign in</Link>
+      <p className="text-center text-sm">
+        Already have an account?{" "}
+        <Link to="/signin" className="text-primary underline-offset-4 hover:underline">
+          Sign in
+        </Link>
       </p>
-    </>
+    </div>
   );
 }

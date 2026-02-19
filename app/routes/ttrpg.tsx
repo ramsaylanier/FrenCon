@@ -2,13 +2,13 @@ import { useRouteLoaderData } from "react-router";
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { redirect } from "react-router";
 import { getSessionUser } from "~/lib/auth.server";
-import TTRPGNominations from "~/components/TTRPGNominations";
+import TTRPGList from "~/components/TTRPGList";
 
 export const meta: MetaFunction = () => [
-  { title: "TTRPG Polling - FrenCon 2026" },
+  { title: "TTRPGs - FrenCon 2026" },
   {
     name: "description",
-    content: "Nominate TTRPGs to play at FrenCon",
+    content: "TTRPGs to play at FrenCon. Add games and vote.",
   },
 ];
 
@@ -27,13 +27,14 @@ export default function TTRPG() {
   const user = data?.user ?? null;
 
   return (
-    <>
-      <h1>TTRPG Nominations</h1>
-      <p>
-        Nominate tabletop RPGs you'd like to play. Sign in to add your
-        nominations.
-      </p>
-      <TTRPGNominations user={user} />
-    </>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">TTRPGs</h1>
+        <p className="text-muted-foreground">
+          Add TTRPGs and vote for what you'd like to play at FrenCon.
+        </p>
+      </div>
+      <TTRPGList user={user} />
+    </div>
   );
 }

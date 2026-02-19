@@ -6,6 +6,12 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "~/lib/firebase.client";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import type { AuthUser } from "~/lib/types";
 
 interface UserProfile {
@@ -73,46 +79,58 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     }
   };
 
-  if (loading) return <p>Loading profile...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) {
+    return <p className="text-muted-foreground">Loading profile...</p>;
+  }
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <div>
-      <h2>Your Profile</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="displayName">Display Name</label>
-          <input
-            id="displayName"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Your name"
-          />
-        </div>
-        <div>
-          <label htmlFor="dietaryRestrictions">
-            Dietary Restrictions & Preferences
-          </label>
-          <textarea
-            id="dietaryRestrictions"
-            value={dietaryRestrictions}
-            onChange={(e) => setDietaryRestrictions(e.target.value)}
-            placeholder="e.g. Vegetarian, nut allergy, no dairy"
-          />
-        </div>
-        <div>
-          <label htmlFor="travelPreferences">Travel Preferences</label>
-          <textarea
-            id="travelPreferences"
-            value={travelPreferences}
-            onChange={(e) => setTravelPreferences(e.target.value)}
-            placeholder="e.g. Flying in Friday, need ride from airport"
-          />
-        </div>
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Save Profile"}
-        </button>
-      </form>
-    </div>
+    <Card>
+      <CardHeader>
+        <h2 className="text-lg font-semibold">Your Profile</h2>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="displayName">Display Name</Label>
+            <Input
+              id="displayName"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="Your name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="dietaryRestrictions">
+              Dietary Restrictions & Preferences
+            </Label>
+            <Textarea
+              id="dietaryRestrictions"
+              value={dietaryRestrictions}
+              onChange={(e) => setDietaryRestrictions(e.target.value)}
+              placeholder="e.g. Vegetarian, nut allergy, no dairy"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="travelPreferences">Travel Preferences</Label>
+            <Textarea
+              id="travelPreferences"
+              value={travelPreferences}
+              onChange={(e) => setTravelPreferences(e.target.value)}
+              placeholder="e.g. Flying in Friday, need ride from airport"
+            />
+          </div>
+          <Button type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Save Profile"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

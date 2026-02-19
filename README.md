@@ -53,9 +53,9 @@ firebase deploy --only hosting
 ## Features
 
 - **Authentication** — Sign in with Email/Password or Google
-- **Game Nominations** — Nominate board games to play
+- **Board Games** — Add board games and vote (0/1/2)
 - **Roundtable Ideas** — Suggest discussion topics
-- **TTRPG Polling** — Nominate tabletop RPGs
+- **TTRPGs** — Add TTRPGs and vote (0/1/2)
 - **Polling Results** — View vote rankings
 - **Merchandise** — Suggest merch ideas
 - **Videos** — Add and watch videos (YouTube/Vimeo)

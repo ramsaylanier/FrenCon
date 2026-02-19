@@ -8,6 +8,12 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "~/lib/firebase.client";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import type { AuthUser } from "~/lib/types";
 
 interface Idea {
@@ -71,52 +77,71 @@ export default function RoundtableIdeas({ user }: RoundtableIdeasProps) {
     }
   };
 
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <div>
-      <h2>Add Roundtable Idea</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="topic">Topic</label>
-          <input
-            id="topic"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            required
-            placeholder="e.g. Top Components"
-          />
-        </div>
-        <div>
-          <label htmlFor="notes">Notes</label>
-          <textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Additional notes..."
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Adding..." : "Add Idea"}
-        </button>
-      </form>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-semibold">Add Roundtable Idea</h2>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="topic">Topic</Label>
+              <Input
+                id="topic"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                required
+                placeholder="e.g. Top Components"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Additional notes..."
+              />
+            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Adding..." : "Add Idea"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
-      <h2>Roundtable Ideas</h2>
-      <ul>
-        {ideas.map((i) => (
-          <li key={i.id}>
-            <strong>{i.topic}</strong>
-            {i.notes && (
-              <>
-                <br />
-                <span>{i.notes}</span>
-              </>
-            )}
-            <br />
-            <small>By {i.createdBy}</small>
-          </li>
-        ))}
-      </ul>
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-semibold">Roundtable Ideas</h2>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-3">
+            {ideas.map((i) => (
+              <li
+                key={i.id}
+                className="border-b border-border pb-3 last:border-0 last:pb-0"
+              >
+                <p className="font-medium">{i.topic}</p>
+                {i.notes && (
+                  <p className="text-muted-foreground text-sm">{i.notes}</p>
+                )}
+                <p className="text-muted-foreground text-xs">
+                  By {i.createdBy}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

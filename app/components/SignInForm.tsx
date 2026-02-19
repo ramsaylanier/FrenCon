@@ -6,6 +6,10 @@ import {
   inMemoryPersistence,
 } from "firebase/auth";
 import { auth } from "~/lib/firebase.client";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
@@ -67,11 +71,11 @@ export default function SignInForm() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleEmailSignIn}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
+    <div className="space-y-6">
+      <form onSubmit={handleEmailSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
             id="email"
             type="email"
             value={email}
@@ -80,9 +84,9 @@ export default function SignInForm() {
             autoComplete="email"
           />
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
             id="password"
             type="password"
             value={password}
@@ -91,15 +95,25 @@ export default function SignInForm() {
             autoComplete="current-password"
           />
         </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" disabled={loading}>
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        <Button type="submit" disabled={loading}>
           {loading ? "Signing in..." : "Sign In"}
-        </button>
+        </Button>
       </form>
-      <p>or</p>
-      <button type="button" onClick={handleGoogleSignIn} disabled={loading}>
+      <p className="text-center text-muted-foreground text-sm">or</p>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleGoogleSignIn}
+        disabled={loading}
+        className="w-full"
+      >
         Sign in with Google
-      </button>
+      </Button>
     </div>
   );
 }

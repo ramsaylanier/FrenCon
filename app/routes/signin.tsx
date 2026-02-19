@@ -21,12 +21,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function SignIn() {
   return (
-    <div style={{ maxWidth: 400, margin: "2rem auto", padding: "2rem", border: "1px solid #eee", borderRadius: 8 }}>
-      <h1 style={{ marginTop: 0 }}>Log In</h1>
-      <p>Sign in to nominate games, add roundtable ideas, and more.</p>
+    <div className="mx-auto max-w-md space-y-6">
+      <div>
+        <h1 className="mb-2 text-2xl font-semibold">Log In</h1>
+        <p className="text-muted-foreground">
+          Sign in to nominate games, add roundtable ideas, and more.
+        </p>
+      </div>
       <SignInForm />
-      <p style={{ marginTop: "1.5rem", marginBottom: 0 }}>
-        Don't have an account? <Link to="/signup">Sign up</Link>
+      <p className="text-center text-sm">
+        Don't have an account?{" "}
+        <Link to="/signup" className="text-primary underline-offset-4 hover:underline">
+          Sign up
+        </Link>
       </p>
     </div>
   );

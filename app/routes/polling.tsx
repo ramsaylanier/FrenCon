@@ -27,10 +27,14 @@ export default function Polling() {
   const user = data?.user ?? null;
 
   return (
-    <>
-      <h1>Polling Results</h1>
-      <p>See how the nominations are ranking. Sign in to view.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Polling Results</h1>
+        <p className="text-muted-foreground">
+          See how the nominations are ranking. Sign in to view.
+        </p>
+      </div>
       <PollingResults user={user} />
-    </>
+    </div>
   );
 }

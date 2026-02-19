@@ -16,13 +16,15 @@ export default function Videos() {
   const user = data?.user ?? null;
 
   return (
-    <>
-      <h1>Videos</h1>
-      <p>
-        Watch FrenCon videos and recordings. Sign in to add videos or view the
-        collection.
-      </p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Videos</h1>
+        <p className="text-muted-foreground">
+          Watch FrenCon videos and recordings. Sign in to add videos or view the
+          collection.
+        </p>
+      </div>
       <VideosList user={user} />
-    </>
+    </div>
   );
 }

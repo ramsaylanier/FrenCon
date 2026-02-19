@@ -1,29 +1,63 @@
 import { Link } from "react-router";
 import UserMenu from "./UserMenu";
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 import type { AuthUser } from "~/lib/types";
+
+const navLinkClass =
+  "text-foreground hover:text-foreground/80 hover:no-underline";
 
 export default function Nav({ user }: { user: AuthUser | null }) {
   return (
-    <nav>
-      <Link to="/">FrenCon</Link>
-      {user && ( 
-        <>
-          <Link to="/games">Games</Link>
-          <Link to="/polling">Polling</Link>
-          <Link to="/roundtable">Roundtable</Link>
-          <Link to="/ttrpg">TTRPG</Link>
-        </>
-      )}
-      <Link to="/videos">Videos</Link>
-      <Link to="/blog">Blog</Link>
-
+    <nav className="flex flex-wrap items-center gap-2">
+      <Button variant="ghost" size="sm" asChild>
+        <Link to="/" className={cn("font-semibold", navLinkClass)}>
+          FrenCon
+        </Link>
+      </Button>
       {user && (
         <>
-          <Link to="/profile">Profile</Link>
-          <UserMenu user={user} />
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/games" className={navLinkClass}>
+              Games
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/polling" className={navLinkClass}>
+              Polling
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/roundtable" className={navLinkClass}>
+              Roundtable
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/ttrpg" className={navLinkClass}>
+              TTRPG
+            </Link>
+          </Button>
         </>
       )}
-      {!user && <Link to="/signin">Log In</Link>}
+      <Button variant="ghost" size="sm" asChild>
+        <Link to="/videos" className={navLinkClass}>
+          Videos
+        </Link>
+      </Button>
+      <Button variant="ghost" size="sm" asChild>
+        <Link to="/blog" className={navLinkClass}>
+          Blog
+        </Link>
+      </Button>
+
+      <span className="ml-auto flex items-center gap-2">
+        {user && <UserMenu user={user} />}
+        {!user && (
+          <Button size="sm" asChild>
+            <Link to="/signin">Log In</Link>
+          </Button>
+        )}
+      </span>
     </nav>
   );
 }

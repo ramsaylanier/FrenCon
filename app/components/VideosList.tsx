@@ -8,6 +8,12 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "~/lib/firebase.client";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import type { AuthUser } from "~/lib/types";
 
 interface Video {
@@ -34,22 +40,32 @@ function getEmbedUrl(url: string): string {
 
 function VideoGrid({ videos }: { videos: Video[] }) {
   return (
-    <div style={{ display: "grid", gap: "1rem" }}>
+    <div className="grid gap-4">
       {videos.map((v) => (
-        <div key={v.id} style={{ border: "1px solid #ccc", padding: "1rem" }}>
-          <h3>{v.title}</h3>
-          {v.description && <p>{v.description}</p>}
-          <div style={{ aspectRatio: "16/9", maxWidth: "560px" }}>
-            <iframe
-              src={getEmbedUrl(v.url)}
-              title={v.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{ width: "100%", height: "100%", border: 0 }}
-            />
-          </div>
-          {v.createdBy && <small>Added by {v.createdBy}</small>}
-        </div>
+        <Card key={v.id}>
+          <CardHeader>
+            <h3 className="font-semibold">{v.title}</h3>
+            {v.description && (
+              <p className="text-muted-foreground text-sm">{v.description}</p>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="aspect-video max-w-[560px] overflow-hidden rounded-md">
+              <iframe
+                src={getEmbedUrl(v.url)}
+                title={v.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="h-full w-full border-0"
+              />
+            </div>
+            {v.createdBy && (
+              <p className="text-muted-foreground text-xs">
+                Added by {v.createdBy}
+              </p>
+            )}
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
@@ -89,44 +105,57 @@ function AddVideoForm({ user }: AddVideoFormProps) {
     }
   };
 
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="title">Title</label>
-        <input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          placeholder="Video title"
-        />
-      </div>
-      <div>
-        <label htmlFor="url">URL (YouTube or Vimeo)</label>
-        <input
-          id="url"
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-          placeholder="https://www.youtube.com/watch?v=..."
-        />
-      </div>
-      <div>
-        <label htmlFor="description">Description (optional)</label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Video description"
-        />
-      </div>
-      <button type="submit" disabled={loading}>
-        {loading ? "Adding..." : "Add Video"}
-      </button>
-    </form>
+    <Card>
+      <CardHeader>
+        <h2 className="text-lg font-semibold">Add Video</h2>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              placeholder="Video title"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="url">URL (YouTube or Vimeo)</Label>
+            <Input
+              id="url"
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description (optional)</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Video description"
+            />
+          </div>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Adding..." : "Add Video"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -155,17 +184,27 @@ function VideosListInner() {
     return () => unsubscribe();
   }, []);
 
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <div>
-      <h2>Videos</h2>
-      {videos.length > 0 ? (
-        <VideoGrid videos={videos} />
-      ) : (
-        <p>No videos yet.</p>
-      )}
-    </div>
+    <Card>
+      <CardHeader>
+        <h2 className="text-lg font-semibold">Videos</h2>
+      </CardHeader>
+      <CardContent>
+        {videos.length > 0 ? (
+          <VideoGrid videos={videos} />
+        ) : (
+          <p className="text-muted-foreground">No videos yet.</p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -175,14 +214,11 @@ interface VideosListProps {
 
 export default function VideosList({ user }: VideosListProps) {
   return (
-    <div>
+    <div className="space-y-6">
       {user ? (
-        <>
-          <h2>Add Video</h2>
-          <AddVideoForm user={user} />
-        </>
+        <AddVideoForm user={user} />
       ) : (
-        <p>Sign in to add videos.</p>
+        <p className="text-muted-foreground">Sign in to add videos.</p>
       )}
       <VideosListInner />
     </div>

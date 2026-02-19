@@ -27,10 +27,14 @@ export default function Merch() {
   const user = data?.user ?? null;
 
   return (
-    <>
-      <h1>Merchandise Ideas</h1>
-      <p>Suggest merchandise ideas for FrenCon. Sign in to add your suggestions.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Merchandise Ideas</h1>
+        <p className="text-muted-foreground">
+          Suggest merchandise ideas for FrenCon. Sign in to add your suggestions.
+        </p>
+      </div>
       <MerchIdeas user={user} />
-    </>
+    </div>
   );
 }

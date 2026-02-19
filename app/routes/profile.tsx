@@ -27,12 +27,14 @@ export default function Profile() {
   const user = data?.user ?? null;
 
   return (
-    <>
-      <h1>Your Profile</h1>
-      <p>
-        Update your display name, dietary restrictions, and travel preferences.
-      </p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Your Profile</h1>
+        <p className="text-muted-foreground">
+          Update your display name, dietary restrictions, and travel preferences.
+        </p>
+      </div>
       <ProfileForm user={user} />
-    </>
+    </div>
   );
 }

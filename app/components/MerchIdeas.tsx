@@ -8,6 +8,12 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "~/lib/firebase.client";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import type { AuthUser } from "~/lib/types";
 
 interface MerchIdea {
@@ -71,52 +77,71 @@ export default function MerchIdeas({ user }: MerchIdeasProps) {
     }
   };
 
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <div>
-      <h2>Suggest Merchandise</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="item">Item</label>
-          <input
-            id="item"
-            value={item}
-            onChange={(e) => setItem(e.target.value)}
-            required
-            placeholder="e.g. FrenCon t-shirt"
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description (optional)</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Details, design ideas, etc."
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Adding..." : "Add Suggestion"}
-        </button>
-      </form>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-semibold">Suggest Merchandise</h2>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="item">Item</Label>
+              <Input
+                id="item"
+                value={item}
+                onChange={(e) => setItem(e.target.value)}
+                required
+                placeholder="e.g. FrenCon t-shirt"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description (optional)</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Details, design ideas, etc."
+              />
+            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Adding..." : "Add Suggestion"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
-      <h2>Merchandise Ideas</h2>
-      <ul>
-        {ideas.map((i) => (
-          <li key={i.id}>
-            <strong>{i.item}</strong>
-            {i.description && (
-              <>
-                <br />
-                <span>{i.description}</span>
-              </>
-            )}
-            <br />
-            <small>Suggested by {i.suggestedBy}</small>
-          </li>
-        ))}
-      </ul>
+      <Card>
+        <CardHeader>
+          <h2 className="text-lg font-semibold">Merchandise Ideas</h2>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-3">
+            {ideas.map((i) => (
+              <li
+                key={i.id}
+                className="border-b border-border pb-3 last:border-0 last:pb-0"
+              >
+                <p className="font-medium">{i.item}</p>
+                {i.description && (
+                  <p className="text-muted-foreground text-sm">{i.description}</p>
+                )}
+                <p className="text-muted-foreground text-xs">
+                  Suggested by {i.suggestedBy}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

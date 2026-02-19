@@ -6,6 +6,10 @@ import {
   inMemoryPersistence,
 } from "firebase/auth";
 import { auth } from "~/lib/firebase.client";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 
 export default function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -71,11 +75,11 @@ export default function SignUpForm() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleEmailSignUp}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
+    <div className="space-y-6">
+      <form onSubmit={handleEmailSignUp} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
             id="email"
             type="email"
             value={email}
@@ -84,9 +88,9 @@ export default function SignUpForm() {
             autoComplete="email"
           />
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
             id="password"
             type="password"
             value={password}
@@ -96,9 +100,9 @@ export default function SignUpForm() {
             autoComplete="new-password"
           />
         </div>
-        <div>
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
             id="confirmPassword"
             type="password"
             value={confirmPassword}
@@ -108,15 +112,25 @@ export default function SignUpForm() {
             autoComplete="new-password"
           />
         </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" disabled={loading}>
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        <Button type="submit" disabled={loading}>
           {loading ? "Signing up..." : "Sign Up"}
-        </button>
+        </Button>
       </form>
-      <p>or</p>
-      <button type="button" onClick={handleGoogleSignUp} disabled={loading}>
+      <p className="text-center text-muted-foreground text-sm">or</p>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleGoogleSignUp}
+        disabled={loading}
+        className="w-full"
+      >
         Sign up with Google
-      </button>
+      </Button>
     </div>
   );
 }

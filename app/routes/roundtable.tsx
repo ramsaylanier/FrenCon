@@ -27,10 +27,14 @@ export default function Roundtable() {
   const user = data?.user ?? null;
 
   return (
-    <>
-      <h1>Roundtable Ideas</h1>
-      <p>Suggest topics for roundtable discussions. Sign in to add your ideas.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">Roundtable Ideas</h1>
+        <p className="text-muted-foreground">
+          Suggest topics for roundtable discussions. Sign in to add your ideas.
+        </p>
+      </div>
       <RoundtableIdeas user={user} />
-    </>
+    </div>
   );
 }

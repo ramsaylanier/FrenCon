@@ -42,13 +42,13 @@ export default function App() {
 
   return (
     <>
-      <header>
+      <header className="border-b border-border pb-4">
         <Nav user={user} />
       </header>
-      <main>
+      <main className="py-6">
         <Outlet />
       </main>
-      <footer>
+      <footer className="mt-12 border-t border-border pt-6 text-center text-muted-foreground text-sm">
         <p>FrenCon 2026 — Board game convention</p>
       </footer>
     </>
