@@ -26,3 +26,8 @@ Thumbs.db
 .firebase/
 firebase-debug.log
 firebase-debug.*.log
+
+scripts/data/
+scripts/seed-config.ts
+scripts/seed-from-csv.ts
+scripts/seed-from-spreadsheet.ts
