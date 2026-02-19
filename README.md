@@ -43,7 +43,16 @@ npm run dev
 
 Visit http://localhost:4321
 
-### 6. Deploy
+### 6. Seed from spreadsheet (optional)
+
+To import board games, TTRPGs, and votes from a Google Spreadsheet:
+
+- **CSV**: Export sheets as CSV, place in `scripts/data/`, run `npm run seed:csv:write`
+- **Sheets API**: Enable Sheets API, share sheet with service account, run `npm run seed:write`
+
+See [scripts/README.md](scripts/README.md) for details.
+
+### 7. Deploy
 
 ```bash
 npm run build

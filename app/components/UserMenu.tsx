@@ -32,9 +32,9 @@ export default function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuItem>
         <Form action="/api/auth/signout" method="get" className="contents">
           <DropdownMenuItem asChild>
-            <button type="submit" className="w-full cursor-default">
+            <Button type="submit" className="w-full cursor-default">
               Sign Out
-            </button>
+            </Button>
           </DropdownMenuItem>
         </Form>
       </DropdownMenuContent>

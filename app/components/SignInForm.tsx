@@ -3,7 +3,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
-  inMemoryPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
 import { auth } from "~/lib/firebase.client";
 import { Alert, AlertDescription } from "~/components/ui/alert";
@@ -18,7 +18,7 @@ export default function SignInForm() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    auth.setPersistence(inMemoryPersistence);
+    auth.setPersistence(browserLocalPersistence);
   }, []);
 
   const signInWithToken = async (idToken: string) => {

@@ -77,6 +77,7 @@ export default function BoardGamesList({ user }: { user: AuthUser | null }) {
     const unsubGames = onSnapshot(
       collection(db, "boardGames"),
       (snapshot) => {
+        console.log("snapshot", snapshot.docs.map((doc) => doc.data()));
         setGames(
           snapshot.docs.map((doc) => ({
             id: doc.id,

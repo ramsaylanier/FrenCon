@@ -1,7 +1,8 @@
 {
-  "firestore": {
-    "rules": "firestore.rules"
-  },
+  "firestore": [
+    { "database": "(default)", "rules": "firestore.rules" },
+    { "database": "frencon-db", "rules": "firestore.rules" }
+  ],
   "hosting": {
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
