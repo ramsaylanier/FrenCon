@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => [
   { name: "description", content: "Board game convention for friends" },
 ];
 
-const PARALLAX_RATE = .2; // Detroit moves up at 40% of scroll speed (lagging behind)
+const PARALLAX_RATE = .3; // Detroit moves up at 40% of scroll speed (lagging behind)
 
 export default function Index() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -27,14 +27,14 @@ export default function Index() {
   }, []);
 
   return (
-    <div ref={scrollRef} className="h-full overflow-auto bg-primary">
-      <div className="relative flex min-h-[60vh] flex-col overflow-hidden md:min-h-full">
+    <div ref={scrollRef} className="h-full overflow-auto">
+      <div className="relative flex flex-col overflow-hidden min-h-[60vh] md:min-h-full bg-primary">
         {/* FrenCon logo - positioned above the Detroit image */}
-        <div className="absolute h-[30vh] left-0 right-0 z-10 flex justify-center px-4 pb-4 bg-white">
+        <div className="absolute w-full h-3/4 z-10 flex justify-center items-start bg-white">
           <img
             src="/FrenCon26 text.png"
             alt="FrenCon 2026"
-            className="max-w-[min(45vw,600px)] w-auto object-contain"
+            className="relative max-w-[min(45vw,600px)] top-[5vh] md:top-[15px] left-[15px] md:left-[25px] w-auto object-contain"
           />
         </div>
 
