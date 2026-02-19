@@ -31,3 +31,4 @@ scripts/data/
 scripts/seed-config.ts
 scripts/seed-from-csv.ts
 scripts/seed-from-spreadsheet.ts
+.vercel

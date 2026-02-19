@@ -28,9 +28,9 @@ export default function Index() {
 
   return (
     <div ref={scrollRef} className="h-full overflow-auto bg-primary">
-      <div className="relative flex min-h-[65vh] flex-col overflow-hidden md:min-h-full">
+      <div className="relative flex min-h-[60vh] flex-col overflow-hidden md:min-h-full">
         {/* FrenCon logo - positioned above the Detroit image */}
-        <div className="absolute h-[50vh] left-0 right-0 z-10 flex justify-center px-4 pb-4 bg-white">
+        <div className="absolute h-[30vh] left-0 right-0 z-10 flex justify-center px-4 pb-4 bg-white">
           <img
             src="/FrenCon26 text.png"
             alt="FrenCon 2026"
