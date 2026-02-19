@@ -27,10 +27,10 @@ export default function Index() {
   }, []);
 
   return (
-    <div ref={scrollRef} className="h-full overflow-auto">
-      <div className="relative flex min-h-full flex-col overflow-hidden">
+    <div ref={scrollRef} className="h-full overflow-auto bg-primary">
+      <div className="relative flex min-h-[65vh] flex-col overflow-hidden md:min-h-full">
         {/* FrenCon logo - positioned above the Detroit image */}
-        <div className="absolute left-0 right-0 top-[25px] z-10 flex justify-center px-4 pb-4">
+        <div className="absolute h-[50vh] left-0 right-0 z-10 flex justify-center px-4 pb-4 bg-white">
           <img
             src="/FrenCon26 text.png"
             alt="FrenCon 2026"
@@ -38,12 +38,14 @@ export default function Index() {
           />
         </div>
 
-        {/* Detroit skyline - full width at bottom, parallax moves up on scroll */}
+        {/* Detroit skyline - bottom-based parallax on mobile, top-based on desktop */}
         <div
-          className="absolute left-0 right-0 z-20 w-full"
+          className="detroit-hero absolute inset-x-0 z-20 w-full"
           style={{
+            "--detroit-offset": `${detroitOffset}px`,
             top: `calc(10% - ${detroitOffset}px)`,
-          }}
+            bottom: "auto",
+          } as React.CSSProperties & { "--detroit-offset": string }}
         >
           <img
             src="/detroit.png"

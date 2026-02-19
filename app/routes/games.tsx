@@ -29,7 +29,7 @@ export default function Games() {
   const user = data?.user ?? null;
 
   return (
-    <div className="space-y-6 px-4 py-6 h-full overflow-hidden">
+    <div className="space-y-3 px-2 py-3 md:space-y-6 md:px-4 md:py-6 h-full overflow-hidden">
       <Tabs defaultValue="board-games" className="grid grid-cols-1 grid-rows-[auto_1fr] gap-0 h-full w-full overflow-hidden">
         <TabsList>
           <TabsTrigger value="board-games">Board Games</TabsTrigger>
@@ -38,7 +38,7 @@ export default function Games() {
         <TabsContent value="board-games" className="h-full overflow-hidden">
           <BoardGamesList user={user} />
         </TabsContent>
-        <TabsContent value="ttrpg">
+        <TabsContent value="ttrpg" className="h-full overflow-hidden">
           <TTRPGList user={user} />
         </TabsContent>
       </Tabs>

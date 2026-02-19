@@ -27,7 +27,7 @@ export default function Roundtable() {
   const user = data?.user ?? null;
 
   return (
-    <div className="space-y-6 px-4 py-6">      
+    <div className="space-y-3 px-2 py-3 md:space-y-6 md:px-4 md:py-6 h-full overflow-auto">
       <RoundtableIdeas user={user} />
     </div>
   );

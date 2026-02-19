@@ -348,19 +348,15 @@ export default function RoundtableIdeas({ user }: { user: AuthUser | null }) {
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+    <Card className="h-full gap-4 py-4 md:gap-6 md:py-6">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 md:px-6">
         <div>
           <h2 className="text-lg font-semibold">Roundtable Ideas</h2>
-          <p className="text-muted-foreground text-sm">
-            Vote: 0 = skip, 1 = interested, 2 = want to discuss. Click column
-            headers to sort.
-          </p>
         </div>
         <AddRoundtableIdeaDialog user={user} onError={setError} />
       </CardHeader>
-      <CardContent className="h-full overflow-scroll">
-        <div className="space-y-4">
+      <CardContent className="h-full overflow-scroll px-4 md:px-6">
+        <div className="space-y-3 md:space-y-4">
           <div className="flex flex-wrap gap-2">
             <Input
               placeholder="Filter by topic..."
@@ -375,6 +371,9 @@ export default function RoundtableIdeas({ user }: { user: AuthUser | null }) {
             table={table}
             loading={loading}
             emptyMessage="No ideas yet. Add one above."
+            mobilePrimaryColumn="topic"
+            mobileColumns={["notes", "createdBy"]}
+            mobileVoteColumnId={user ? `vote_${user.uid}` : undefined}
           />
         </div>
       </CardContent>

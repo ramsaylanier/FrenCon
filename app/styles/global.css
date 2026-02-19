@@ -118,6 +118,14 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Mobile: bottom-based parallax (anchors to bottom, moves up on scroll) */
+@media (max-width: 767px) {
+  .detroit-hero {
+    top: auto !important;
+    bottom: var(--detroit-offset, 0) !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

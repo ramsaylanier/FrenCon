@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function SignIn() {
   return (
-    <div className="mx-auto max-w-md space-y-6">
+    <div className="mx-auto max-w-md space-y-6 p-4 overflow-auto">
       <div>
         <h1 className="mb-2 text-2xl font-semibold">Log In</h1>
         <p className="text-muted-foreground">

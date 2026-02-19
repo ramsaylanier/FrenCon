@@ -62,7 +62,7 @@ export default function AddRoundtableIdeaDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={!user}>Add Roundtable Idea</Button>
+        <Button disabled={!user}>Add Idea</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>

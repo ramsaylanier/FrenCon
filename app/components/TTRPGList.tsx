@@ -32,6 +32,7 @@ import {
 import TTRPGFormDialog from "~/components/TTRPGFormDialog";
 import { cn } from "~/lib/utils";
 import { DataTable } from "~/components/DataTable";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -217,11 +218,29 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
         accessorKey: "style",
         header: "Style",
         filterFn: "equals",
+        cell: ({ getValue }) => {
+          const value = getValue() as string | undefined;
+          if (!value) return "—";
+          return (
+            <Badge variant="secondary" className="capitalize">
+              {value}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "category",
         header: "Category",
         filterFn: "equals",
+        cell: ({ getValue }) => {
+          const value = getValue() as string | undefined;
+          if (!value) return "—";
+          return (
+            <Badge variant="secondary" className="capitalize">
+              {value}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "gms",
@@ -319,19 +338,16 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+    <>
+      <Card className="h-full gap-4 py-4 md:gap-6 md:py-6">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 md:px-6">
           <div>
             <h2 className="text-lg font-semibold">TTRPGs</h2>
-            <p className="text-muted-foreground text-sm">
-              Vote: 0 = skip, 1 = interested, 2 = want to play. Click column headers to sort.
-            </p>
           </div>
           <TTRPGFormDialog user={user} onError={setError} />
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="h-full overflow-scroll px-4 md:px-6">
+          <div className="space-y-3 md:space-y-4">
             <div className="flex flex-wrap gap-2">
               <Input
                 placeholder="Filter by title..."
@@ -386,6 +402,10 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
               table={table}
               loading={loading}
               emptyMessage="No TTRPGs yet. Add one using the button above."
+              mobilePrimaryColumn="title"
+              mobileColumns={["vibe", "gms"]}
+              mobileHeaderBadges={["style", "category"]}
+              mobileVoteColumnId={user ? `vote_${user.uid}` : undefined}
             />
           </div>
         </CardContent>
@@ -414,6 +434,6 @@ export default function TTRPGList({ user }: { user: AuthUser | null }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
